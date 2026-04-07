@@ -15,7 +15,6 @@ const [form, setForm] = useState({
   password: "",
 });
 
-export default SignUp
 const navigate = useNavigate();
 
 const handleSignup = async () => {
