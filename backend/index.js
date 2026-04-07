@@ -13,7 +13,7 @@ app.use(cors({
 );
 
 app.use(express.urlencoded({ extended: true })); // this 
-app.user(express.json()); // to parse json data coming from client side
+app.use(express.json()); // to parse json data coming from client side
 
 app.use("/api/auth", userRoutes); // http://localhost:9000/api/auth/signup
 

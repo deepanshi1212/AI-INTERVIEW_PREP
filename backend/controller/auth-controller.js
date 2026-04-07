@@ -1,20 +1,16 @@
+import User from "../models/user-model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import User from "../models/user-model.js";
 
-// Generate JWT Token
 const generateToken = (userId) => {
-  return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
-    expiresIn: "7d",
-  });
+  let token = jwt.sign({ userId }, "secret", { expiresIn: "1d" });
+  return token;
 };
 
-// @desc    Register a new user
-// @route   POST /api/auth/register
-// @access  Public
+// register
 export const registerUser = async (req, res) => {
   try {
-    const { name, email, password, profileImageUrl } = req.body;
+    const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
       return res
@@ -28,7 +24,7 @@ export const registerUser = async (req, res) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    const salt = await bcrypt.genSalt(10);
+    const salt = await bcrypt.genSalt(10); // abc =? ouiahsfh89q3hon
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const user = await User.create({
@@ -41,17 +37,14 @@ export const registerUser = async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
-      // profileImageUrl: user.profileImageUrl,
       token: generateToken(user._id),
     });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
-// @desc    Login user
-// @route   POST /api/auth/login
-// @access  Public
+// login
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -63,7 +56,6 @@ export const loginUser = async (req, res) => {
         _id: user._id,
         name: user.name,
         email: user.email,
-        profileImageUrl: user.profileImageUrl,
         token: generateToken(user._id),
       });
     } else {
